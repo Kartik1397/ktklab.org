@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>systemd user service setup</title>
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <link rel="stylesheet" href="css/pandoc.css" />
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">systemd user service setup</h1>
+</header>
+<p>In this post I will share how I setup a basic user level systemd
+service to test <a href="ktklab.org">ktklab.org</a>(<a
+href="https://github.com/Kartik1397/ktklab.org">source</a>) locally.</p>
+<p>Create a new service file <code>http-server.service</code> in
+<code>~/.config/systemd/user</code> with following content.</p>
+<pre><code>[Unit]
+Description=http-server
+
+[Service]
+ExecStart=/usr/local/bin/http-server -p 8080 /home/ktk/ktklab.org/html
+
+[Install]
+WantedBy=multi-user.target</code></pre>
+<p>You can set value of <code>ExecStart=</code> option to whatever
+executable you want to run as a systemd service. Make sure to use
+absolute paths.</p>
+<p>Run <code>systemctl --user daemon-reload</code> to load new
+configuration file.<br />
+Run <code>systemctl --user start http-server</code> to start http-server
+service.<br />
+Check the health of service by running
+<code>systemctl --user status http-server</code>.</p>
+<p>Now, I can make changes in <code>src/</code> directory and run
+<code>make clean &amp; make all</code> to generate fresh html files in
+<code>html/</code> directory and I’ll be able to see updated site on
+<code>http://localhost:8080</code>.</p>
+</body>
+</html>
