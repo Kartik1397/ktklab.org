@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>How to view content of docker image layers?</title>
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <link rel="stylesheet" href="css/pandoc.css" />
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">How to view content of docker image layers?</h1>
+</header>
+<h2 id="short-answer">Short Answer</h2>
+<p>Use <a
+href="https://github.com/Kartik1397/docker-image-layer-explorer"
+target="_blank">docker-image-layer-explorer</a></p>
+<pre><code>docker-image-layer-explorer &lt;image-id&gt; --layer &lt;layer-id&gt; --extract ./</code></pre>
+<h2 id="full-story">Full Story</h2>
+<p>While exploring a new repository of some project I came across a
+Dockerfile similar to following.</p>
+<pre><code>FROM node
+WORKDIR /app
+
+COPY . .
+RUN rm config/some-secrete.json
+ENTRYPOINT [&quot;docker-entrypoint.sh&quot;]
+
+EXPOSE 3000
+CMD /bin/bash /app/start_app.sh</code></pre>
+<p>The issue with this Dockerfile is that the author used the
+<code>RUN</code> command to remove a file containing a secret
+(<code>config/some-secrete.json</code>). However, a malicious actor
+could still access the secret file from the image layer created by the
+<code>COPY . .</code> command. To prove my theory, I needed to find
+evidence by examining the layers of the Docker image.</p>
+<p>After some research, I came across <a
+href="https://github.com/wagoodman/dive" target="_blank">dive</a>, a
+tool designed to explore each layer within a Docker image. Using dive, I
+ran an analysis on an image generated from the aforementioned
+Dockerfile, and indeed, I found that the secret file was present in one
+of the layers. Unfortunately, dive does not provide the functionality to
+download or extract a specific layer.</p>
+<figure>
+<img src="/images/dive.webp" alt="Screenshot of dive in action" />
+<figcaption aria-hidden="true">Screenshot of dive in action</figcaption>
+</figure>
+<p>So, I started exploring how docker image works, I delved into two
+valuable resources: the <a
+href="https://github.com/moby/moby/blob/master/image/spec/v1.2.md"
+target="_blank">Docker Image Specification v1.2.0</a> and <a
+href="https://github.com/wagoodman/dive/issues/336#issuecomment-1530196172"
+target="_blank">a comment explaining the manual extraction process</a>.
+These resources helped me to understand the structure of Docker
+images.</p>
+<p>By utilizing the <code>docker save</code> command, we can export the
+image as a tar file and gain access to additional information about each
+layer from the JSON files contained within the tar file. To extract a
+specific layer, we simply need to extract the
+<code>&lt;layer-id&gt;/layer.tar</code> file.</p>
+<p>However, manually executing 5 to 6 commands each time can be
+time-consuming, and I also wanted to identify which Docker command
+corresponds to each layer. To simplify this process, I developed the <a
+href="https://github.com/Kartik1397/docker-image-layer-explorer"
+target="_blank">docker-image-layer-explorer</a> tool. It streamlines the
+task of viewing Docker image layers and provides insights into the
+relationship between Docker commands and the layers they create.</p>
+</body>
+</html>
