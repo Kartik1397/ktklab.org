@@ -38,3 +38,12 @@ pre code {
   padding: 0px;
 }
 
+figure {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+figcaption {
+  text-align: center;
+}
