@@ -2,6 +2,12 @@
 
 My name is Kartik. I work as a software engineer at [Shipsy](https://shipsy.io){target="_blank"}. I hack on system software in free time.
 
+My main programming languages are Typescript, Javascript, C++, Python, Go and Rust, but I have some experience with bash, Java, Lua and Ruby. My preferred OS is Linux but I work fine in Windows and MacOS.
+
+I like solving puzzels, and tend to learn new skills and knowledge quickly.
+
+I am conscious of the importance of security and aware of most security best practice (I think).
+
 Some selected work:
 
 * [online-ide](https://github.com/Kartik1397/online-ide){target="_blank"} (Write & execute C++ programs from web browser)
