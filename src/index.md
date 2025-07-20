@@ -3,6 +3,7 @@
 [About](about.html)
 [Github](https://github.com/Kartik1397){target="_blank"}
 [Resume](https://ktklab.org/files/resume.pdf){target="_blank"}
+[Bookmarks](bookmarks.html)
 [Contact](mailto:kartik@ktklab.org)
 
 ---
